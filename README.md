@@ -311,10 +311,10 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Related Projects
 
-- [SendMIDI](https://github.com/gbevin/SendMIDI) - Original CLI tool (GPL-3.0)
+- [SendMIDI](https://github.com/gbevin/SendMIDI) - JUCE-based MIDI CLI tool (GPL-3.0)
 - [ReceiveMIDI](https://github.com/gbevin/ReceiveMIDI) - MIDI input CLI tool
 - [loopMIDI](https://www.tobias-erichsen.de/software/loopmidi.html) - Windows virtual MIDI driver
 
 ## Acknowledgments
 
-This project is inspired by SendMIDI but implemented from scratch without JUCE dependencies for maximum portability and minimal licensing constraints.
+midix is inspired by SendMIDI's command-line interface design but implemented independently from scratch using only OS-native MIDI frameworks (CoreMIDI/WinMM) for MIT licensing and minimal dependencies.
