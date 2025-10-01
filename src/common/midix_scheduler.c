@@ -7,6 +7,8 @@
 #include <string.h>
 #include <time.h>
 #include <errno.h>
+#include <signal.h>
+#include <unistd.h>
 
 #define DEFAULT_QUEUE_SIZE 4096
 #define SPIN_THRESHOLD_NS  1000000  // 1ms - switch to spin wait
@@ -250,8 +252,38 @@ void midix_scheduler_shutdown(midix_ctx* ctx) {
     pthread_cond_signal(&ctx->queue.cond);
     pthread_mutex_unlock(&ctx->queue.mutex);
 
-    // Wait for worker to finish
-    pthread_join(ctx->worker_thread, NULL);
+    // Wait for worker to finish with timeout
+    struct timespec ts;
+    clock_gettime(CLOCK_REALTIME, &ts);
+    ts.tv_sec += 1;  // 1 second timeout
+
+#ifdef __APPLE__
+    // macOS doesn't have pthread_timedjoin_np, use manual timeout
+    int join_result = -1;
+    for (int i = 0; i < 10; i++) {
+        int result = pthread_kill(ctx->worker_thread, 0);
+        if (result == ESRCH) {
+            // Thread has exited
+            pthread_join(ctx->worker_thread, NULL);
+            join_result = 0;
+            break;
+        }
+        usleep(100000);  // 100ms
+    }
+
+    if (join_result != 0) {
+        MIDIX_LOG_WARN("Worker thread did not exit within timeout, forcing cleanup");
+        // On macOS, we can't force-kill pthread, just detach
+        pthread_detach(ctx->worker_thread);
+    }
+#else
+    // Linux/BSD: use pthread_timedjoin_np
+    int join_result = pthread_timedjoin_np(ctx->worker_thread, NULL, &ts);
+    if (join_result == ETIMEDOUT) {
+        MIDIX_LOG_WARN("Worker thread did not exit within timeout");
+        pthread_detach(ctx->worker_thread);
+    }
+#endif
 
     // Clear remaining events
     midix_queue_destroy(&ctx->queue);

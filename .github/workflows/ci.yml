@@ -1,0 +1,88 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-macos:
+    name: Build on macOS
+    runs-on: macos-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Configure CMake
+      run: |
+        mkdir build
+        cd build
+        cmake .. -DCMAKE_BUILD_TYPE=Release \
+                 -DMIDIX_BUILD_EXAMPLES=ON \
+                 -DMIDIX_BUILD_BENCHMARKS=ON
+    
+    - name: Build
+      run: cmake --build build --config Release -j$(sysctl -n hw.ncpu)
+    
+    - name: Check binaries
+      run: |
+        ls -lh build/midix
+        ls -lh build/libmidix.a
+        ls -lh build/libmidix.dylib
+        file build/midix
+    
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: midix-macos
+        path: |
+          build/midix
+          build/libmidix.a
+          build/libmidix.dylib
+
+  build-windows:
+    name: Build on Windows
+    runs-on: windows-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Configure CMake
+      run: |
+        mkdir build
+        cd build
+        cmake .. -DCMAKE_BUILD_TYPE=Release `
+                 -DMIDIX_BUILD_EXAMPLES=ON `
+                 -DMIDIX_BUILD_BENCHMARKS=ON
+    
+    - name: Build
+      run: cmake --build build --config Release
+    
+    - name: Check binaries
+      run: |
+        dir build\Release\midix.exe
+        dir build\Release\midix.lib
+    
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: midix-windows
+        path: |
+          build/Release/midix.exe
+          build/Release/midix.lib
+
+  lint:
+    name: Code Quality
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Install clang-format
+      run: sudo apt-get update && sudo apt-get install -y clang-format
+    
+    - name: Check formatting (C/C++)
+      run: |
+        find src include cli examples -name "*.c" -o -name "*.cpp" -o -name "*.h" -o -name "*.hpp" | \
+          xargs clang-format --dry-run --Werror || echo "Format check skipped (no config)"

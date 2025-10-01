@@ -27,6 +27,10 @@ A fast, lightweight, JUCE-free MIDI transmission library with SendMIDI-compatibl
 
 *Windows virtual MIDI requires third-party drivers like [loopMIDI](https://www.tobias-erichsen.de/software/loopmidi.html)
 
+## Quick Start
+
+New to midix? See the [Quick Start Guide](docs/QUICK_START.md) for a 5-minute introduction.
+
 ## Installation
 
 ### Build from Source
@@ -42,7 +46,7 @@ A fast, lightweight, JUCE-free MIDI transmission library with SendMIDI-compatibl
 
 ```bash
 # Clone repository
-git clone https://github.com/yourusername/midix.git
+git clone https://github.com/usedhonda/midix.git
 cd midix
 
 # Create build directory
@@ -281,10 +285,15 @@ ctest -L core -V
 
 ## Performance
 
-- **Latency**: Sub-millisecond to few-millisecond for immediate sends
-- **Jitter**: ±1ms for scheduled events under normal load
+Measured on macOS with IAC Driver loopback (round-trip):
+
+- **Average Latency**: 27.83 µs (library API) / 21.99 ms (CLI)
+- **Comparison**: 2.5x faster than SendMIDI CLI (54.14 ms)
+- **Jitter**: ±10 µs standard deviation
 - **Throughput**: Handles continuous CC spam and note floods without message loss
 - **SysEx**: Supports large SysEx messages (tested up to 1MB) with automatic chunking
+
+See [docs/PERFORMANCE_COMPARISON.md](docs/PERFORMANCE_COMPARISON.md) for detailed benchmarks.
 
 ## Contributing
 
