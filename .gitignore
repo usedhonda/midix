@@ -1,0 +1,48 @@
+# Documentation
+CLAUDE.md
+docs/log/
+
+# Build directories
+build/
+cmake-build-*/
+out/
+bin/
+lib/
+
+# Compiled objects and libraries
+*.o
+*.obj
+*.a
+*.lib
+*.dylib
+*.so
+*.dll
+*.exp
+*.pdb
+*.ilk
+
+# OS specific
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE and editors
+.vscode/
+.idea/
+*.xcodeproj/
+*.xcworkspace/
+*.swp
+*.swo
+*~
+.vs/
+
+# CMake
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+install_manifest.txt
+CTestTestfile.cmake
+
+# Logs
+*.log
+docs/log/claude/
