@@ -1,9 +1,4 @@
-# >>> project-bootstrap managed >>>
-.cc-status-bar.voice.json
-# <<< project-bootstrap managed <<<
-
 # Documentation
-CLAUDE.md
 docs/log/
 
 # Build directories
@@ -50,3 +45,10 @@ CTestTestfile.cmake
 # Logs
 *.log
 docs/log/claude/
+
+# >>> project-bootstrap local-only >>>
+CLAUDE.local.md
+.codex/config.toml
+.local/
+.cc-status-bar.voice.json
+# <<< project-bootstrap local-only <<<
